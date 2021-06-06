@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var sleepHours = 8.0
-    @State private var wakeUp = Date()
+    @State private var wakeUp = defaultWakeTime
     @State private var cupsOfCoffee = 1
     
     @State private var alertTitle = ""
@@ -18,41 +18,36 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                Text("When do you want to wakeup?")
-                    .font(.headline)
-                    .padding()
-                
-                DatePicker("Please enter a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
-                    .labelsHidden()
-//                    .datePickerStyle(WheelDatePickerStyle())
-                    .padding()
-                
-                Text("Desired amount of sleep")
-                    .font(.headline)
-                    .padding()
-                
-                Stepper(value: $sleepHours, in: 4...12, step: 0.25 ){
-                    Text("\(sleepHours, specifier: "%g") hours")
+            Form {
+                VStack (alignment: .leading, spacing: 0) {
+                    Text("When do you want to wakeup?")
+                        .font(.headline)
                         .padding()
-                }.padding()
+                    
+                    DatePicker("Please enter a date", selection: $wakeUp, displayedComponents: .hourAndMinute)
+                        .labelsHidden()
+                        .datePickerStyle(WheelDatePickerStyle())
+                }
                 
-                Text("Daily Coffee Intake")
-                    .font(.headline)
-                    .padding()
-                
-                Stepper(value: $cupsOfCoffee, in: 1...20) {
-                    Text(cupsOfCoffee > 1 ? "\(cupsOfCoffee) cups" : "\(cupsOfCoffee) cup")
+                VStack (alignment: .leading, spacing: 0) {
+                    Text("Desired amount of sleep")
+                        .font(.headline)
                         .padding()
-                }.padding()
+                    
+                    Stepper(value: $sleepHours, in: 4...12, step: 0.25 ){
+                        Text("\(sleepHours, specifier: "%g") hours")
+                    }.padding()
+                }
                 
-                Button(action: calculateBedTime, label: {
-                    Text("Calculate")
-                })
-                    .padding()
-                    .border(Color.black)
-                
-//                Spacer()
+                VStack (alignment: .leading, spacing: 0) {
+                    Text("Daily Coffee Intake")
+                        .font(.headline)
+                        .padding()
+                    
+                    Stepper(value: $cupsOfCoffee, in: 1...20) {
+                        Text(cupsOfCoffee > 1 ? "\(cupsOfCoffee) cups" : "\(cupsOfCoffee) cup")
+                    }.padding()
+                }
                 
             }.navigationBarTitle("Count My Coffee")
             .navigationBarItems(trailing:
@@ -66,6 +61,13 @@ struct ContentView: View {
         }
         .edgesIgnoringSafeArea(.all)
         
+    }
+    
+    static var defaultWakeTime: Date {
+        var components = DateComponents()
+        components.hour = 7
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? Date()
     }
     
     func getTotalSleepTime() -> Double {
@@ -108,9 +110,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-//        ContentView()
         ContentView()
-                    .previewDevice(PreviewDevice(rawValue: "iPhone 12"))
-                    .previewDisplayName("iPhone 12")
     }
 }
